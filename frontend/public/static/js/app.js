@@ -1,32 +1,10 @@
-var ws;
-
-((async () => {
-  const events = {
-    readingList: {
-      saved: function (ns, msg) {
-        app.books = msg.unmarshal()
-        // or make a new http fetch
-        // fetchTodos(function (items) {
-        //   app.todos = msg.unmarshal()
-        // });
-      }
-    }
-  };
-
-  const conn = await neffos.dial("ws://127.0.0.1:8080/readinglist/sync", events);
-  ws = await conn.connect("readinglist");
-})()).catch(console.error);
-
-
-
 function fetchbooks(onComplete) {
   axios.get("/api/readinglist").then(response => {
     if (response.data === null) {
       return;
     }
-    console.log("we are here")
+    console.log(response)
     onComplete(response.data.data);
-    console.log('adfdsfds')
   });
 }
 
@@ -44,21 +22,13 @@ var bookStorage = {
     return books;
   },
   save: function (books) {
-    console.log(JSON.stringify(books))
     console.log(books)
-    console.log(JSON.stringify(books[0]))
-    console.log(books[0])
-    req = {
-        "test" : "test"
-      }
-    console.log(req)
-    axios.post("/api/readinglist", req).then(response => {
-      if (!response.data.success) {
+    axios.post("/api/readinglist", data=books).then(response => {
+      console.log(response)
+      if (!response.status == 200) {
         window.alert("saving had a failure");
         return;
       }
-      console.log("send: save");
-      ws.Emit("save")
     });
   }
 }

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 
 	. "ongkyle.com/reading-list/backend/datasource"
 	. "ongkyle.com/reading-list/backend/services"
@@ -31,20 +32,20 @@ func handleConnection(conn net.Conn, dataService *DataService) {
 	fmt.Printf("Received : %+v", message)
 	fmt.Println()
 	encoder := gob.NewEncoder(conn)
-	payload := Response{}
+	response := Response{}
 	if message.HttpMethod == "GET" {
-		payload = dataService.Get(message.SessionID)
+		response = dataService.Get(message.SessionID)
 		fmt.Println()
-		fmt.Println(payload)
+		fmt.Println(response)
 		fmt.Println()
 	} else if message.HttpMethod == "SAVE" {
-		err := dataService.Save(message.SessionID, message.Body)
-		if err != nil {
-			log.Fatal(err)
+		response = dataService.Save(message.SessionID, message.Body)
+		if response.Code != http.StatusCreated {
+			log.Fatal(response)
 		}
-		payload = dataService.Get(message.SessionID)
+		response = dataService.Get(message.SessionID)
 	}
-	encoder.Encode(payload)
+	encoder.Encode(response)
 }
 
 func main() {
