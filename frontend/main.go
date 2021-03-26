@@ -5,12 +5,18 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"os"
+	"encoding/json"
 
 	. "ongkyle.com/reading-list/frontend/spa"
+	. "ongkyle.com/reading-list/frontend/services"
+	. "ongkyle.com/reading-list/common"
 
-    "github.com/gorilla/mux"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
+var store = sessions.NewCookieStore([]byte(os.Getenv("psuedo_random")))
 
 func main() {
 	r := mux.NewRouter()
@@ -53,19 +59,35 @@ func serveRequests(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveGet(w http.ResponseWriter, r *http.Request){
-	w.WriteHeader(http.StatusOK)
-	log.Println()
+	w.Header().Set("Content-Type", "application/json")
+	session, _ := store.Get(r, "session-name")
+	fmt.Println(session.ID)
+	response := NewDataService("localhost:8888").Get(session.ID)
+	w.WriteHeader(response.Code)
+	json.NewEncoder(w).Encode(response)
+
 	log.Println(w)
 	log.Println(r)
-	log.Println()
+	log.Println(response)
 
 }
 
 func servePost(w http.ResponseWriter, r *http.Request){
-	w.WriteHeader(http.StatusCreated)
-	log.Println()
+	w.Header().Set("Content-Type", "application/json")
+	session, _ := store.Get(r, "session-name")
+	var items []Item
+	err := json.NewDecoder(r.Body).Decode(&items)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	log.Println("Parsed these items...")
+	log.Println(items)
+	response := NewDataService("localhost:8888").Save(session.ID, items)
+	w.WriteHeader(response.Code)
+
+	log.Println(response)
 	log.Println(w)
 	log.Println(r)
-	log.Println()
-
 } 

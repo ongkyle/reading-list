@@ -7,7 +7,7 @@
 	todo
 	- [ ] remove duplicated utils on the front end and backend (pretty sure this is really hard)
 */
-package utils
+package common
 
 import (
 	"flag"

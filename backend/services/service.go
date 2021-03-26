@@ -10,6 +10,7 @@ import (
 	// standard
 	"fmt"
 	"sync"
+	"net/http"
 
 	// user-defined
 	. "ongkyle.com/reading-list/common"
@@ -47,11 +48,11 @@ func (s *DataService) Get(sessionOwner string) Response {
 		items := s.items[sessionOwner]
 		fmt.Println(items)
 		fmt.Println()
-		response = NewResponse(200, items)
+		response = NewResponse(http.StatusOK, items)
 		fmt.Println(response)
 		fmt.Println()
 	} else {
-		response = NewResponse(404, make([]Item, 0))
+		response = NewResponse(http.StatusNotFound, EmptyItems())
 	}
 	s.mu.RUnlock()
 	fmt.Println()
@@ -60,8 +61,9 @@ func (s *DataService) Get(sessionOwner string) Response {
 	return response
 }
 
-func (s *DataService) Save(sessionOwner string, newItems []Item) error {
+func (s *DataService) Save(sessionOwner string, newItems []Item) Response {
 	var prevID int64
+	var response Response = NewResponse(http.StatusInternalServerError, EmptyItems())
 	for i := range newItems {
 		if newItems[i].ID == 0 {
 			newItems[i].ID = prevID
@@ -73,5 +75,6 @@ func (s *DataService) Save(sessionOwner string, newItems []Item) error {
 	s.items[sessionOwner] = newItems
 	s.mu.Unlock()
 	fmt.Println(s.items)
-	return nil
+	response = NewResponse(http.StatusCreated, EmptyItems())
+	return response
 }

@@ -16,3 +16,7 @@ type Item struct {
 	Author    string `json:"author"`
 	Completed bool   `json:"completed"`
 }
+
+func EmptyItems() []Item {
+	return make([]Item, 0)
+}
