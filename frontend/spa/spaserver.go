@@ -8,19 +8,19 @@ import (
 
 
 type spaHandler struct {
-	publicDir string
+	staticPath string
 	indexFile string
 }
 
 
 func (h *spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	p := filepath.Join(h.publicDir, filepath.Clean(r.URL.Path))
+	p := filepath.Join(h.staticPath, filepath.Clean(r.URL.Path))
 
 	if info, err := os.Stat(p); err != nil {
-		http.ServeFile(w, r, filepath.Join(h.publicDir, h.indexFile))
+		http.ServeFile(w, r, filepath.Join(h.staticPath, h.indexFile))
 		return
 	} else if info.IsDir() {
-		http.ServeFile(w, r, filepath.Join(h.publicDir, h.indexFile))
+		http.ServeFile(w, r, filepath.Join(h.staticPath, h.indexFile))
 		return
 	}
 
