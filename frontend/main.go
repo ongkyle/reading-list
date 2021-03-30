@@ -36,13 +36,13 @@ func main() {
 
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:8000",
+		Addr:    "localhost:8080",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	log.Fatal(srv.ListenAndServe())
 	fmt.Println("Listening on port 8080...")
+	log.Fatal(srv.ListenAndServe())
 }
 
 func serveRequests(w http.ResponseWriter, r *http.Request) {
@@ -66,9 +66,9 @@ func serveGet(w http.ResponseWriter, r *http.Request){
 	w.WriteHeader(response.Code)
 	json.NewEncoder(w).Encode(response)
 
-	log.Println(w)
-	log.Println(r)
-	log.Println(response)
+	fmt.Println(w)
+	fmt.Println(r)
+	fmt.Println(response)
 
 }
 
@@ -82,12 +82,12 @@ func servePost(w http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	log.Println("Parsed these items...")
-	log.Println(items)
+	fmt.Println("Parsed these items...")
+	fmt.Println(items)
 	response := NewDataService("localhost:8888").Save(session.ID, items)
 	w.WriteHeader(response.Code)
 
-	log.Println(response)
-	log.Println(w)
-	log.Println(r)
+	fmt.Println(response)
+	fmt.Println(w)
+	fmt.Println(r)
 } 

@@ -1,0 +1,8 @@
+FROM golang:1.16.2
+RUN mkdir /frontend
+RUN mkdir /common
+COPY /common /common
+COPY /frontend /frontend
+WORKDIR /frontend
+RUN go build -o main .
+CMD ["/frontend/main"]
