@@ -17,6 +17,7 @@ import (
 )
 
 func TestNewBackendDataService(t *testing.T) {
+	t.Parallel()
 	dataService := NewDataService("localhost:8080")
 	if dataService.HostName != "localhost:8080"{
 		message := fmt.Sprintf("Expected: localhost:8080. got: %s", dataService.HostName)

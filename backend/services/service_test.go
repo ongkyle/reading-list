@@ -3,14 +3,16 @@ package service
 import (
 	// standard lib
 	"fmt"
+	"net/http"
 	"testing"
 
 	// user defined
 	"ongkyle.com/reading-list/backend/datasource"
-	. "ongkyle.com/reading-list/common"
+	"ongkyle.com/reading-list/common"
 )
 
 func TestNewDataService(t *testing.T) {
+	t.Parallel()
 	dataService := NewDataService(datasource.Items)
 	if _, exists := dataService.items["test"]; !exists {
 		message := fmt.Sprintf("Data Service does not have key 'test'")
@@ -26,6 +28,7 @@ func TestNewDataService(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
+	t.Parallel()
 	dataService := NewDataService(datasource.Items)
 	testResponse := dataService.Get("test")
 	for _, item := range testResponse.Data {
@@ -37,16 +40,17 @@ func TestGet(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
+	t.Parallel()
 	dataService := NewDataService(datasource.Items)
-	saveItem := Item{
+	saveItem := common.Item{
 		SessionID: "saved_sessID",
 		Title:     "saved_title",
 		Completed: true}
-	saveItems := []Item{
+	saveItems := []common.Item{
 		saveItem,
 	}
-	err := dataService.Save("test", saveItems)
-	if err != nil {
-		t.Error(err)
+	response := dataService.Save("test", saveItems)
+	if response.Code != http.StatusCreated {
+		t.Error(response)
 	}
 }
