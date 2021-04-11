@@ -1,0 +1,8 @@
+FROM golang:1.16.2
+RUN mkdir /backend
+RUN mkdir /common
+COPY /common /common
+COPY /backend /backend
+WORKDIR /backend
+RUN go build -o main .
+CMD ["/backend/main"]
