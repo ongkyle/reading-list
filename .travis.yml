@@ -1,3 +1,4 @@
+language: generic 
 sudo: required
 services: 
   - docker
@@ -6,6 +7,6 @@ before_install:
   - docker build -t kho226/reading-list-frontend -f frontend/Dockerfile.dev .
   - docker build -t kho226/reading-list-backend -f backend/Dockerfile.dev .
 
-scripts:
-  - docker run kho226/reading-list-frontend go test -v -cover ./...
-  - docker run kho226/reading-list-backend go test -v -cover ./...
+script:
+  - docker run -e CI=true kho226/reading-list-frontend go test -v -cover ./...
+  - docker run -e CI=true kho226/reading-list-backend go test -v -cover ./...
