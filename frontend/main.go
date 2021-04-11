@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"fmt"
 	"log"
 	"time"
 	"os"
@@ -23,26 +22,26 @@ func main() {
     // It's important that this is before your catch-all route ("/")
     api := r.PathPrefix("/api/").Subrouter()
 	api.HandleFunc("/readinglist", serveRequests)
-	fmt.Println("Finished setting up routers")
+	log.Println("Finished setting up routers")
 
 	staticFiles := http.FileServer(http.Dir("./public/static"))
 	r.PathPrefix("/js/").Handler(staticFiles)
 	r.PathPrefix("/css/").Handler(staticFiles)
-	fmt.Println("Finished setting up static content")
+	log.Println("Finished setting up static content")
 
 	spa := SpaHandler("public", "index.html")
 	r.PathPrefix("/").Handler(spa)
-	fmt.Println("Finished setting up spa")
+	log.Println("Finished setting up spa")
 
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "localhost:8080",
+		Addr:    "127.0.0.1:8080",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
-	fmt.Println("Listening on port 8080...")
-	log.Fatal(srv.ListenAndServe())
+	log.Println("Listening on port 8080...")
+	log.Fatalln(srv.ListenAndServe())
 }
 
 func serveRequests(w http.ResponseWriter, r *http.Request) {
@@ -61,14 +60,14 @@ func serveRequests(w http.ResponseWriter, r *http.Request) {
 func serveGet(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 	session, _ := store.Get(r, "session-name")
-	fmt.Println(session.ID)
-	response := NewDataService("localhost:8888").Get(session.ID)
+	log.Println(session.ID)
+	response := NewDataService("backend:8888").Get(session.ID)
 	w.WriteHeader(response.Code)
 	json.NewEncoder(w).Encode(response)
 
-	fmt.Println(w)
-	fmt.Println(r)
-	fmt.Println(response)
+	log.Println(r)
+	log.Println(w)
+	log.Println(response)
 
 }
 
@@ -82,12 +81,13 @@ func servePost(w http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	fmt.Println("Parsed these items...")
-	fmt.Println(items)
-	response := NewDataService("localhost:8888").Save(session.ID, items)
+	log.Println("Parsed these items...")
+	log.Println(items)
+	response := NewDataService("backend:8888").Save(session.ID, items)
 	w.WriteHeader(response.Code)
 
-	fmt.Println(response)
-	fmt.Println(w)
-	fmt.Println(r)
-} 
+	log.Println(r)
+	log.Println(w)
+	log.Println(response)
+}
+
