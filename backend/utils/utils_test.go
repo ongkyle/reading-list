@@ -6,6 +6,7 @@ import (
 )
 
 func TestParseListenPort(t *testing.T) {
+	t.Parallel()
 	args := make([]string, 4)
 	args[0] = "--listen"
 	args[1] = "8899"
@@ -19,6 +20,7 @@ func TestParseListenPort(t *testing.T) {
 }
 
 func TestParseBackendPort(t *testing.T){
+	t.Parallel()
 	args := make([]string, 4)
 	args[0] = "--listen"
 	args[1] = "8899"
